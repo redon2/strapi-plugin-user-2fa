@@ -22,7 +22,6 @@ export interface MFASettings {
 }
 export interface ModalDetailProps {
   mfaSettings: MFASettings;
-  open: boolean;
   setModalOpen: Function;
   setMfaSettings: Function;
 }

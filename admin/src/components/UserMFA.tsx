@@ -3,18 +3,22 @@ import { Mail } from '@strapi/icons';
 import { useFetchClient, unstable_useContentManagerContext as useContentManagerContext, unstable_useDocument } from '@strapi/strapi/admin';
 import { getUserSettings, updateMfaRegistration, createMfaRegistration } from '../api';
 import { useState, useEffect } from 'react';
-import { MFAModalSettingProps, ModalDetailProps, MFARegistration, MFAConfigurationViewProps, User } from '../types';
+import {
+    MFAModalSettingProps,
+    ModalDetailProps,
+    MFARegistration,
+    MFAConfigurationViewProps,
+    User
+} from '../types';
 
 const MFAModalSetting: React.FC<MFAModalSettingProps> = ({ setting, updateSetting }) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = event.target.checked;
-        updateSetting(setting.id, { enabled: isChecked });
+        updateSetting(setting.id, { enabled: event.target.checked });
     };
 
     return (
         <Flex
             tag="aside"
-            aria-labelledby="additional-information"
             background="neutral0"
             borderColor="neutral150"
             padding={4}
@@ -54,27 +58,32 @@ const MFAModalSetting: React.FC<MFAModalSettingProps> = ({ setting, updateSettin
 const ModalDetail: React.FC<ModalDetailProps> = ({ mfaSettings, setMfaSettings, setModalOpen }) => {
     const fetchClient = useFetchClient();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [settings, setSettings] = useState<MFARegistration[]>(mfaSettings.registrations);
+    // const [settings, setSettings] = useState<MFARegistration[]>(mfaSettings.registrations);
 
     const updateSetting = (id: number, updatedSetting: Partial<MFARegistration>) => {
-        setSettings((prevSettings) =>
-            prevSettings.map((s) => (s.id === id ? { ...s, ...updatedSetting } : s))
-        );
+        setMfaSettings((prev: any) => ({
+            ...prev,
+            registrations: prev.registrations.map((s: any) =>
+                s.id === id ? { ...s, ...updatedSetting } : s
+            ),
+        }));
     };
 
     const onSubmit = async () => {
         setIsSubmitting(true);
         try {
-            await Promise.all(settings.map((setting) => updateMfaRegistration(fetchClient, setting)));
-
+            await Promise.all(mfaSettings.registrations.map((setting) =>
+                updateMfaRegistration(fetchClient, setting)
+            ));
+            setMfaSettings((prev: any) => ({
+                ...prev,
+                enabled: prev.registrations.some((reg: any) => reg.enabled),
+            }));
+            setModalOpen(false);
         } catch (error) {
             console.error("Error updating MFA settings", error);
         } finally {
             setIsSubmitting(false);
-            const isEnabled = settings.some((reg) => reg.enabled === true);
-            setModalOpen(false);
-            setMfaSettings({ enabled: isEnabled, registrations: settings });
-
         }
     };
 
@@ -84,7 +93,7 @@ const ModalDetail: React.FC<ModalDetailProps> = ({ mfaSettings, setMfaSettings, 
                 <Modal.Title>MFA Settings</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {settings.map((item) => (
+                {mfaSettings.registrations.map((item) => (
                     <MFAModalSetting key={item.id} setting={item} updateSetting={updateSetting} />
                 ))}
             </Modal.Body>
@@ -102,7 +111,7 @@ const ModalDetail: React.FC<ModalDetailProps> = ({ mfaSettings, setMfaSettings, 
 
 const MfaSection: React.FC = () => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState(true);
     const [mfaSettings, setMfaSettings] = useState<{ enabled: boolean; registrations: MFARegistration[] }>({
         enabled: false,
         registrations: [],
@@ -116,33 +125,38 @@ const MfaSection: React.FC = () => {
         collectionType: data.collectionType,
     });
 
-    const enableMfaForUser = () => {
-        createMfaRegistration(fetchClient, user);
-        console.log(document)
-    };
-
-    const user: User | undefined = document as User | undefined;
+    const user = document as User | undefined;
 
     useEffect(() => {
-        if (!user || !user.id) return;
+        if (!user?.id) return;
 
         const fetchData = async () => {
             try {
                 const settings = await getUserSettings(fetchClient, user);
                 setMfaSettings(settings);
             } catch (error) {
-                console.error('Error fetching data', error, user);
+                console.error('Error fetching data', error);
             } finally {
                 setLoading(false);
             }
         };
         fetchData();
-    }, [user]);
+    }, [user, fetchClient]);
+
+    const enableMfaForUser = async () => {
+        if (!user) return;
+        try {
+            await createMfaRegistration(fetchClient, user);
+            const settings = await getUserSettings(fetchClient, user);
+            setMfaSettings(settings);
+        } catch (error) {
+            console.error("Error enabling MFA", error);
+        }
+    };
 
     return (
         <Flex
             tag="aside"
-            aria-labelledby="additional-information"
             background="neutral0"
             borderColor="neutral150"
             padding={4}
@@ -162,8 +176,7 @@ const MfaSection: React.FC = () => {
                         <Flex direction="column" alignItems="flex-start">
                             <Typography fontWeight="bold">Status:</Typography>
                             <Badge
-                                backgroundColor={mfaSettings.enabled ? 'success500' : 'danger600'}
-                                textColor="neutral0"
+                                backgroundColor={mfaSettings.enabled ? 'success500' : 'danger600'} textColor="neutral0"
                             >
                                 {mfaSettings.enabled ? 'Enabled' : 'Disabled'}
                             </Badge>
@@ -179,18 +192,20 @@ const MfaSection: React.FC = () => {
                         </Flex>
                     </Flex>
                     <Modal.Root open={modalOpen} onOpenChange={setModalOpen}>
-                        {mfaSettings.registrations.length == 0 ?
-                            <Button color="primary" variant="primary" onClick={enableMfaForUser} >
+                        {mfaSettings.registrations.length === 0 ? (
+                            <Button color="primary" variant="primary" onClick={enableMfaForUser}>
                                 Enable
                             </Button>
-                            :
+                        ) : (
                             <Modal.Trigger>
-                                <Button color="primary" variant="primary">
-                                    Change
-                                </Button>
+                                <Button color="primary" variant="primary">Change</Button>
                             </Modal.Trigger>
-                        }
-                        <ModalDetail mfaSettings={mfaSettings} setMfaSettings={setMfaSettings} open={modalOpen} setModalOpen={setModalOpen} />
+                        )}
+                        <ModalDetail
+                            mfaSettings={mfaSettings}
+                            setMfaSettings={setMfaSettings}
+                            setModalOpen={setModalOpen}
+                        />
                     </Modal.Root>
                 </>
             )}
@@ -199,10 +214,7 @@ const MfaSection: React.FC = () => {
 };
 
 const MFAConfigurationView: React.FC<MFAConfigurationViewProps> = ({ slug }) => {
-    if (slug === 'plugin::users-permissions.user') {
-        return <MfaSection />;
-    }
-    return null;
+    return slug === 'plugin::users-permissions.user' ? <MfaSection /> : null;
 };
 
 export { MFAConfigurationView };

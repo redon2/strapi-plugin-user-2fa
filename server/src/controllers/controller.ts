@@ -29,10 +29,11 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
   },
   async createMfaRegistration(ctx) {
     const { data } = ctx.request.body;
-    console.log(data);
+    // console.log(data);
     const registration = await strapi
       .documents(`plugin::${PLUGIN_ID}.mfa-registration`)
       .create({ data: data });
+    await strapi.plugin(PLUGIN_ID).service('service').registerEmailMfa(data.value);
 
     ctx.body = registration;
   },
