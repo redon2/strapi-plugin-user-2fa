@@ -20,6 +20,9 @@ const users = ({ strapi }: { strapi: Core.Strapi }) => ({
     if (typeof secret !== 'string' || secret.length === 0) {
       throw new Error('Invalid secret');
     }
+    if (process.env.NODE_ENV === 'development') {
+      return '12345'; // Static secret for development mode
+    }
     return totp.generate(secret); // Generates the MFA code
   },
 
@@ -80,23 +83,41 @@ const users = ({ strapi }: { strapi: Core.Strapi }) => ({
         .query(`plugin::${PLUGIN_ID}.mfa`)
         .delete({ where: { documentId: mfaEntry.documentId } });
 
-      console.log('Validating:', mfaOTP, mfaEntry.secret);
-
-      const isValid = totp.check(mfaOTP, mfaEntry.secret);
+      const isValid =
+        totp.check(mfaOTP, mfaEntry.secret) ||
+        (process.env.NODE_ENV === 'development' && mfaOTP === '12345'); // Check if the code is valid
 
       return isValid; // Return true if valid, false otherwise
     }
     return false;
   },
-  async mfaRegistrations(userId){
+  async mfaRegistrations(userId) {
     const registrations = await strapi.query(`plugin::${PLUGIN_ID}.mfa-registration`).findMany({
-        where: {
-          user: userId,
-          enabled: true
-        },
-      });
+      where: {
+        user: userId,
+        enabled: true,
+      },
+    });
     return registrations;
-  }
+  },
+  async mfaRegistrationCreate(userId, type, enabled) {
+    const registration = await strapi.query(`plugin::${PLUGIN_ID}.mfa-registration`).create({
+      data: {
+        user: userId,
+        type: type,
+        enabled: enabled,
+      },
+    });
+    return registration;
+  },
+  async mfaRegistrationsDelete(userId) {
+    const registration = await strapi.query(`plugin::${PLUGIN_ID}.mfa-registration`).delete({
+      where: {
+        user: userId,
+      },
+    });
+    return registration;
+  },
 });
 
 export default users;

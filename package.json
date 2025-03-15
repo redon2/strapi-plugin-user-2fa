@@ -42,6 +42,7 @@
     "@strapi/typescript-utils": "^5.5.1",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
+    "eslint": "^9.22.0",
     "prettier": "^3.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

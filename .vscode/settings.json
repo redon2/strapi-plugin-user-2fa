@@ -1,5 +1,11 @@
 {
     "cSpell.words": [
         "totp"
-    ]
+    ],
+    "[typescript]": {
+    "editor.wordWrap": "on"
+  },
+  "[typescriptreact]": {
+    "editor.wordWrap": "on"
+  }
 }

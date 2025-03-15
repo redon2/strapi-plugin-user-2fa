@@ -1,3 +1,5 @@
 {
-    "user-2fa.plugin.name": "MFA Plugin"
+  "user-2fa.plugin.name": "MFA Plugin",
+  "user-2fa.custom-columnLabel": "True Value",
+  "user-2fa.custom-columnDescription": "This column always shows TRUE"
 }

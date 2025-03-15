@@ -35,7 +35,10 @@ function mfa({ strapi }) {
           .userMfaInit(ctx.response.body.user.id);
 
         // call service to send notification
-        await strapi.plugin(PLUGIN_ID).service('service').notify2fa(ctx.response.body.user, mfa, mfaRegistrations);
+        await strapi
+          .plugin(PLUGIN_ID)
+          .service('service')
+          .notify2fa(ctx.response.body.user, mfa, mfaRegistrations);
 
         const mfaToken = jwt.sign({ userId: ctx.response.body?.user?.id }, config.mfaTokenSecret, {
           expiresIn: config.mfaTokenExpiresIn,
@@ -44,7 +47,6 @@ function mfa({ strapi }) {
           mfaToken: mfaToken,
         };
       }
-
     }
     if (ctx.request.method === 'POST' && ctx.request.path === '/api/auth/local/2fa') {
       const mfaToken = ctx.request.body?.mfaToken;
@@ -52,12 +54,10 @@ function mfa({ strapi }) {
       if (mfaToken && mfaOTP) {
         try {
           const decoded = (await jwt.verify(mfaToken, config.mfaTokenSecret)) as JwtPayload;
-          //   console.log(decoded); // tempMFAToken is valid
           const isMfaValid = await strapi
             .plugin(PLUGIN_ID)
             .service('users')
             .validateUserMfa(mfaOTP, decoded.userId);
-          console.log('Valid', isMfaValid);
           if (isMfaValid) {
             const user = await strapi.db
               .query('plugin::users-permissions.user')
