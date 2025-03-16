@@ -1,4 +1,13 @@
 {
+  "name": "strapi-plugin-user-2fa",
+  "description": "Plugin for Strapi Local auth to manage 2FA for users.",
+  "license": "MIT",
+  "author": "Redon2 Solutions <info@redon2.ca>",
+  "repository": {
+    "url": "git+https://github.com/redon2/strapi-plugin-user-2fa.git",
+    "type": "git",
+    "directory": "."
+  },
   "version": "0.0.0",
   "keywords": [],
   "type": "commonjs",
@@ -64,8 +73,8 @@
     "displayName": "Strapi Plugin User 2FA",
     "description": "Plugin for Strapi Local auth to manage 2FA for users."
   },
-  "name": "strapi-plugin-user-2fa",
-  "description": "Plugin for Strapi Local auth to manage 2FA for users.",
-  "license": "MIT",
-  "author": "Redon2 Solutions <info@redon2.ca>"
+  "bugs": {
+    "url": "https://github.com/redon2/strapi-plugin-user-2fa/issues"
+  },
+  "homepage": "https://github.com/redon2/strapi-plugin-user-2fa#readme"
 }

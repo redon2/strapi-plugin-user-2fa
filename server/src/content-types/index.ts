@@ -10,7 +10,11 @@ const mfa = {
   options: {
     draftAndPublish: false,
   },
-  pluginOptions: {},
+  pluginOptions: {
+    'content-manager': {
+      visible: false,
+    },
+  },
   attributes: {
     userId: {
       type: 'integer',
@@ -32,7 +36,11 @@ const mfaRegistration = {
   options: {
     draftAndPublish: false,
   },
-  pluginOptions: {},
+  pluginOptions: {
+    'content-manager': {
+      visible: false,
+    },
+  },
   attributes: {
     user: {
       type: 'relation',
@@ -52,7 +60,7 @@ const mfaRegistration = {
     },
     value: {
       type: 'string',
-    }
+    },
   },
 };
 export default {

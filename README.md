@@ -68,6 +68,8 @@ Modify your plugins file `config/plugin.ts` to have the following:
 
 ## API Usage:
 
+### User Authentication
+
 if user has MFA configured and enabled the `POST`:`/api/auth/local` will respond with the following:
 
 ```json
@@ -76,7 +78,7 @@ if user has MFA configured and enabled the `POST`:`/api/auth/local` will respond
 }
 ```
 
-once the user retreives the OTP the following API should be called:  
+once the user retrieves the OTP the following API should be called:  
 `POST`:`/api/auth/local/2fa` with the following payload:
 
 ```json
@@ -97,11 +99,61 @@ if the MFA token and the OTP are valid, the API will return
 }
 ```
 
+### User settings
+
+A user with a valid token is able to query `GET`:`/api/user-2fa/me` to get a list of MFA registrations.
+the API response with the following:
+
+```javascript
+[
+  // list of registration objects
+  {
+    id: 1,
+    documentId: 'nhsw180pg2oh86m40zs5n8ht',
+    enabled: false,
+    createdAt: '2025-03-16T02:37:52.236Z',
+    updatedAt: '2025-03-16T03:38:28.100Z',
+    publishedAt: '2025-03-16T03:38:28.097Z',
+    locale: null,
+    type: 'email',
+    value: 'fake@email.local',
+  },
+];
+```
+
+User will be able to enable and or disable their own registrations using `PATCH`:`/api/user-2fa/me/:documentId` with the following payload:
+
+```json
+{
+  "data": {
+    "enabled": true
+  }
+}
+```
+
+the API will respond with the updated record:
+
+```javascript
+[
+  // list of registration objects
+  {
+    id: 1,
+    documentId: 'nhsw180pg2oh86m40zs5n8ht',
+    enabled: true,
+    createdAt: '2025-03-16T02:37:52.236Z',
+    updatedAt: '2025-03-16T03:38:28.100Z',
+    publishedAt: '2025-03-16T03:38:28.097Z',
+    locale: null,
+    type: 'email',
+    value: 'fake@email.local',
+  },
+];
+```
+
 ## TODO:
 
-- API for user to be able to change his own settings
 - Improve Email template
-- Confirm compatability with refresh token plugin
+- Confirm compatibility with refresh token plugin
 
 ## Workflows:
 
