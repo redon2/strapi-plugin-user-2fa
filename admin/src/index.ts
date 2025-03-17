@@ -1,4 +1,5 @@
 import React from 'react';
+import { PERMISSIONS } from './constants';
 import { getTranslation } from './utils/getTranslation';
 import { PLUGIN_ID } from './pluginId';
 import { Initializer } from './components/Initializer';
@@ -29,12 +30,36 @@ export default {
       isReady: false,
       name: PLUGIN_ID,
     });
-    app.registerHook("Admin/CM/pages/EditView/mutate-edit-view-layout", disabledRegistrationsView);
+    app.registerHook('Admin/CM/pages/EditView/mutate-edit-view-layout', disabledRegistrationsView);
 
     app.getPlugin('content-manager').injectComponent('editView', 'right-links', {
       name: 'MFA Config',
       Component: MFAConfigurationView,
     });
+    app.createSettingSection(
+      {
+        id: PLUGIN_ID,
+        intlLabel: {
+          id: getTranslation('Settings.section-label'),
+          defaultMessage: 'Users & Permissions plugin',
+        },
+      },
+      [
+        {
+          intlLabel: {
+            id: getTranslation('HeaderNav.link.emailTemplates'),
+            defaultMessage: 'Email templates',
+          },
+          id: 'email-templates',
+          to: `${PLUGIN_ID}/email-templates`,
+          Component: () =>
+            import('./pages/EmailTemplates').then((mod) => ({
+              default: mod.ProtectedEmailTemplatesPage,
+            })),
+          permissions: PERMISSIONS.readEmailTemplates,
+        },
+      ]
+    );
   },
   bootstrap(app: any) {
     app.getPlugin('content-manager').injectComponent('editView', 'informations', {

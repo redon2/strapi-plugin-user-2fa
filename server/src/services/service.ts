@@ -1,6 +1,7 @@
 import type { Core } from '@strapi/strapi';
 const _ = require('lodash');
 import { PLUGIN_ID } from '../pluginId';
+import { interpolateTemplate } from '../utils';
 
 interface NotifSettings {
   notifications: {
@@ -24,17 +25,27 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
         case 'email':
           // console.log('sending email', registration);
           // email 2fa
-          const body = `Use the following one-time password (OTP) to sign in to your account. ${payload}`;
+          const emailTemplates = await strapi
+            .store({ type: 'plugin', name: 'users-permissions', key: 'email' })
+            .get();
+          const templateOptions = emailTemplates['mfa_otp_notification'].options;
+          if (!templateOptions) {
+            throw new Error("Template 'mfa_otp_notification' not found");
+          }
+          const values = {
+            username: user.username,
+            code: payload,
+          };
           const emailToSend = {
             to: registration.value || user.email, // fallback
             from:
-              config.notifications.email.fromAddress || config.notifications.email.fromName
-                ? `${config.notifications.email.fromName} <${config.notifications.email.fromAddress}>`
+              templateOptions.from.email && templateOptions.from.name
+                ? `${templateOptions.from.name} <${templateOptions.from.email}>`
                 : undefined,
-            replyTo: config.notifications.email.replyTo,
-            subject: config.notifications.email.subject,
-            text: body,
-            html: body,
+            replyTo: templateOptions.response_email || '',
+            subject: templateOptions.object || 'MFA Email',
+            text: interpolateTemplate(templateOptions.message, values),
+            html: interpolateTemplate(templateOptions.message_html, values),
           };
           // console.log(emailToSend);
           await strapi.plugin('email').service('email').send(emailToSend);
@@ -44,21 +55,29 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
       }
     });
   },
-  async registerEmailMfa(email) {
+  async notifyEmailMFAChange(registration) {
     const config = strapi.config.get(`plugin::${PLUGIN_ID}`) as NotifSettings;
-    const body = `Hello, your account is now protected. You will be required to use 2FA when signing into your account.`;
-    const emailToSend = {
-      to: email, // fallback
-      from:
-        config.notifications.email.fromAddress || config.notifications.email.fromName
-          ? `${config.notifications.email.fromName} <${config.notifications.email.fromAddress}>`
-          : undefined,
-      replyTo: config.notifications.email.replyTo,
-      subject: 'Your account is now protected',
-      text: body,
-      html: body,
+    const emailTemplates = await strapi
+      .store({ type: 'plugin', name: 'users-permissions', key: 'email' })
+      .get();
+    const templateOptions = emailTemplates['mfa_enabled_notification'].options;
+    if (!templateOptions) {
+      throw new Error("Template 'mfa_enabled_notification' not found");
+    }
+    const values = {
+      username: registration.user.username,
     };
-    // console.log(emailToSend);
+    const emailToSend = {
+      to: registration.value || registration.user.email, // fallback
+      from:
+        templateOptions.from.email && templateOptions.from.name
+          ? `${templateOptions.from.name} <${templateOptions.from.email}>`
+          : undefined,
+      replyTo: templateOptions.response_email || '',
+      subject: templateOptions.object || 'MFA Email',
+      text: interpolateTemplate(templateOptions.message, values),
+      html: interpolateTemplate(templateOptions.message_html, values),
+    };
     await strapi.plugin('email').service('email').send(emailToSend);
   },
 });

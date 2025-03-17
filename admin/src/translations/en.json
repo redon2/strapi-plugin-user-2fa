@@ -1,5 +1,12 @@
 {
   "user-2fa.plugin.name": "MFA Plugin",
   "user-2fa.custom-columnLabel": "True Value",
-  "user-2fa.custom-columnDescription": "This column always shows TRUE"
+  "user-2fa.custom-columnDescription": "This column always shows TRUE",
+  "user-2fa.Settings.section-label": "MFA Plugin",
+  "user-2fa.HeaderNav.link.emailTemplates": "Email templates",
+  "user-2fa.Email.template.email_confirmation.display": "Email address confirmation",
+  "user-2fa.Email.template.reset_password.display": "Reset Password",
+  "user-2fa.Email.template.mfa_enabled_notification.display": "MFA has been enabled notification",
+  "user-2fa.Email.template.mfa_otp_notification.display": "MFA Code notification",
+  "user-2fa.PopUpForm.header.edit.email-templates": "Edit Template"
 }
