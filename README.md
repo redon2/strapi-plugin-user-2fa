@@ -33,6 +33,12 @@ This token works by creating a temporary MFA token, and blocking login until the
 
   ![strapi mfa disabled](./docs/pluginSettings.png)
 
+- As the plugin provides some User APIs, the admin can modify the permissions:
+
+  By default the `Authenticated` role has access to view their won MFA registrations. If Admin wants to allow this role to modify their own registrations the `updateMyMFA` action needs to be enabled.
+
+  ![strapi mfa disabled](./docs/pluginRoleSettings.png)
+
 ## ⚠️ Compatibility with Strapi versions
 
 - This plugin relies on Strapi5 new `documentId`. It will not work with earlier versions!
@@ -43,11 +49,11 @@ This token works by creating a temporary MFA token, and blocking login until the
 To install the Strapi MFA Plugin, simply run one of the following command:
 
 ```
-npm install @redon2inc/strapi-plugin-user-2fa
+npm install strapi-plugin-user-2fa
 ```
 
 ```
-yarn add @redon2inc/strapi-plugin-user-2fa
+yarn add strapi-plugin-user-2fa
 ```
 
 ## Config
