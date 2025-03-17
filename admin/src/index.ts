@@ -1,28 +1,13 @@
-import React from 'react';
 import { PERMISSIONS } from './constants';
 import { getTranslation } from './utils/getTranslation';
 import { PLUGIN_ID } from './pluginId';
 import { Initializer } from './components/Initializer';
-import { PluginIcon } from './components/PluginIcon';
 import addColumnToTableHook from './components/CustomColumn';
-import disabledRegistrationsView from './components/DisabledRegristrationsView';
+import disabledRegistrationsView from './components/DisabledRegistrationsView';
 import { MFAConfigurationView } from './components/UserMFA';
 
 export default {
   register(app: any) {
-    app.addMenuLink({
-      to: `plugins/${PLUGIN_ID}`,
-      icon: PluginIcon,
-      intlLabel: {
-        id: `${PLUGIN_ID}.plugin.name`,
-        defaultMessage: PLUGIN_ID,
-      },
-      Component: async () => {
-        const { App } = await import('./pages/App');
-
-        return App;
-      },
-    });
     app.registerHook('Admin/CM/pages/ListView/inject-column-in-table', addColumnToTableHook);
     app.registerPlugin({
       id: PLUGIN_ID,
@@ -41,7 +26,7 @@ export default {
         id: PLUGIN_ID,
         intlLabel: {
           id: getTranslation('Settings.section-label'),
-          defaultMessage: 'Users & Permissions plugin',
+          defaultMessage: 'MFA plugin',
         },
       },
       [
@@ -61,12 +46,7 @@ export default {
       ]
     );
   },
-  bootstrap(app: any) {
-    app.getPlugin('content-manager').injectComponent('editView', 'informations', {
-      name: 'my-plugin-my-compo',
-      Component: React.createElement(React.Fragment, null, 'My component'),
-    });
-  },
+  bootstrap(app: any) {},
   async registerTrads({ locales }: { locales: string[] }) {
     return Promise.all(
       locales.map(async (locale) => {
