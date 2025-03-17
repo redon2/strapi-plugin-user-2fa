@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import { useTracking } from '@strapi/admin/strapi-admin';
 import { useNotifyAT } from '@strapi/design-system';
 import {
@@ -16,19 +15,36 @@ import { useMutation, useQuery, useQueryClient, QueryClient, QueryClientProvider
 import { PERMISSIONS } from '../../constants';
 import { getTranslation } from '../../utils/getTranslation';
 
-import EmailForm from './components/EmailForm.jsx';
-import EmailTable from './components/EmailTable.jsx';
+import EmailForm from './components/EmailForm';
+import EmailTable from './components/EmailTable'; // Ensure this is now a `.tsx` file
 
 const queryClient = new QueryClient();
 
-const ProtectedEmailTemplatesPage = () => (
+// ✅ Define TypeScript types for email templates
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  message: string;
+  options?: {
+    message_html?: string;
+  };
+}
+
+// ✅ Define TypeScript types for props
+interface EmailTemplatesData {
+  [key: string]: EmailTemplate;
+}
+
+const ProtectedEmailTemplatesPage: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <Page.Protect permissions={PERMISSIONS.readEmailTemplates}>
       <EmailTemplatesPage />
     </Page.Protect>
   </QueryClientProvider>
 );
-const EmailTemplatesPage = () => {
+
+const EmailTemplatesPage: React.FC = () => {
   const { formatMessage } = useIntl();
   const { trackUsage } = useTracking();
   const { notifyStatus } = useNotifyAT();
@@ -37,34 +53,36 @@ const EmailTemplatesPage = () => {
   const { get, put } = useFetchClient();
   const { formatAPIError } = useAPIErrorHandler();
 
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [templateToEdit, setTemplateToEdit] = React.useState(null);
+  // ✅ Use correct types for state variables
+  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+  const [templateToEdit, setTemplateToEdit] = React.useState<string | null>(null);
 
+  // ✅ Correctly type the useRBAC hook
   const {
     isLoading: isLoadingForPermissions,
     allowedActions: { canUpdate },
   } = useRBAC({ update: PERMISSIONS.updateEmailTemplates });
 
-  const { isLoading: isLoadingData, data } = useQuery(
+  // ✅ Fetch email templates with proper typing
+  const { isLoading: isLoadingData, data } = useQuery<EmailTemplatesData>(
     ['users-permissions', 'email-templates'],
     async () => {
-      const { data } = await get('/users-permissions/email-templates');
-
-      return data;
+      const response = await get('/users-permissions/email-templates');
+      return response.data;
     },
     {
       onSuccess() {
         notifyStatus(
           formatMessage({
             id: getTranslation('Email.template.data.loaded'),
-            defaultMessage: 'Email templates has been loaded',
+            defaultMessage: 'Email templates have been loaded',
           })
         );
       },
       onError(error) {
         toggleNotification({
           type: 'danger',
-          message: formatAPIError(error),
+          message: formatAPIError(error as any),
         });
       },
     }
@@ -72,17 +90,20 @@ const EmailTemplatesPage = () => {
 
   const isLoading = isLoadingForPermissions || isLoadingData;
 
-  const handleToggle = () => {
+  // ✅ Function type: toggle modal
+  const handleToggle = (): void => {
     setIsModalOpen((prev) => !prev);
   };
 
-  const handleEditClick = (template) => {
-    setTemplateToEdit(template);
+  // ✅ Function type: handle editing
+  const handleEditClick = (templateId: string): void => {
+    setTemplateToEdit(templateId);
     handleToggle();
   };
 
+  // ✅ Mutate email templates with proper TypeScript type
   const submitMutation = useMutation(
-    (body) => put('/users-permissions/email-templates', { 'email-templates': body }),
+    (body: EmailTemplatesData) => put('/users-permissions/email-templates', { 'email-templates': body }),
     {
       async onSuccess() {
         await queryClient.invalidateQueries(['users-permissions', 'email-templates']);
@@ -93,23 +114,28 @@ const EmailTemplatesPage = () => {
         });
 
         trackUsage('didEditEmailTemplates');
-
         handleToggle();
       },
       onError(error) {
         toggleNotification({
           type: 'danger',
-          message: formatAPIError(error),
+          message: formatAPIError(error as any),
         });
       },
-      refetchActive: true,
     }
   );
 
-  const handleSubmit = (body) => {
+  // ✅ Function type: handle submission
+  const handleSubmit = (body: EmailTemplate): void => {
     trackUsage('willEditEmailTemplates');
 
-    const editedTemplates = { ...data, [templateToEdit]: body };
+    if (!data || !templateToEdit || !data[templateToEdit]) return;
+
+    const editedTemplates: EmailTemplatesData = {
+      ...data,
+      [templateToEdit]: { ...body, id: templateToEdit } // ✅ Ensure `id` is included
+    };
+
     submitMutation.mutate(editedTemplates);
   };
 
@@ -137,13 +163,15 @@ const EmailTemplatesPage = () => {
         })}
       />
       <Layouts.Content>
-        <EmailTable onEditClick={handleEditClick} canUpdate={canUpdate} emailTemplates={data} />
-        <EmailForm
-          template={data[templateToEdit]}
-          onToggle={handleToggle}
-          open={isModalOpen}
-          onSubmit={handleSubmit}
-        />
+        <EmailTable onEditClick={handleEditClick} canUpdate={canUpdate} emailTemplates={data ?? {}} />
+        {templateToEdit && (
+          <EmailForm
+            template={data?.[templateToEdit] ?? ({ id: '', name: '', subject: '', message: '' } as EmailTemplate)}
+            onToggle={handleToggle}
+            open={isModalOpen}
+            onSubmit={handleSubmit}
+          />
+        )}
       </Layouts.Content>
     </Page.Main>
   );

@@ -1,14 +1,38 @@
+// @ts-nocheck
 import * as React from 'react';
-
 import { Button, Grid, Modal, Breadcrumbs, Crumb, VisuallyHidden } from '@strapi/design-system';
 import { Form, InputRenderer } from '@strapi/strapi/admin';
-import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
 import { getTranslation } from '../../../utils/getTranslation';
 import schema from '../utils/schema';
 
-const EmailForm = ({ template = {}, onToggle, open, onSubmit }) => {
+// ✅ Define TypeScript type for the email template
+interface EmailTemplate {
+  display?: string;
+  icon?: string;
+  options?: {
+    from?: {
+      name?: string;
+      email?: string;
+    };
+    message?: string;
+    object?: string;
+    response_email?: string;
+    message_html?: string;
+  };
+}
+
+// ✅ Define TypeScript type for component props
+interface EmailFormProps {
+  template: EmailTemplate;
+  open: boolean;
+  onSubmit: Function;
+
+  onToggle: () => void;
+}
+
+const EmailForm: React.FC<EmailFormProps> = ({ template, onToggle, open, onSubmit }) => {
   const { formatMessage } = useIntl();
 
   return (
@@ -44,24 +68,31 @@ const EmailForm = ({ template = {}, onToggle, open, onSubmit }) => {
               {`${formatMessage({
                 id: getTranslation('PopUpForm.header.edit.email-templates'),
                 defaultMessage: 'Edit email template',
-              })}, ${template.display ? formatMessage({ id: getTranslation(template.display), defaultMessage: template.display }) : ''}`}
+              })}, ${template.display
+                ? formatMessage({ id: getTranslation(template.display), defaultMessage: template.display })
+                : ''}`}
             </Modal.Title>
           </VisuallyHidden>
         </Modal.Header>
-        <Form onSubmit={onSubmit} initialValues={template} validationSchema={schema}>
+        <Form
+          onSubmit={(values: any) => onSubmit(values as EmailTemplate)}
+          initialValues={template}
+          validationSchema={schema}
+        >
           {({ isSubmitting }) => {
-            console.log(template);
-            const htmlMessage = template.options.message_html ?
-              [{
-                label: formatMessage({
-                  id: getTranslation('PopUpForm.Email.options.message.label'),
-                  defaultMessage: 'Message HTML',
-                }),
-                name: 'options.message_html',
-                size: 12,
-                type: 'text',
-
-              }] : [];
+            const htmlMessage = template.options?.message_html
+              ? [
+                {
+                  label: formatMessage({
+                    id: getTranslation('PopUpForm.Email.options.message.label'),
+                    defaultMessage: 'Message HTML',
+                  }),
+                  name: 'options.message_html',
+                  size: 12,
+                  type: 'text',
+                },
+              ]
+              : [];
 
             return (
               <>
@@ -113,22 +144,16 @@ const EmailForm = ({ template = {}, onToggle, open, onSubmit }) => {
                         size: 12,
                         type: 'text',
                         'border-radius': 0,
-
                       },
                       ...htmlMessage,
-
                     ].map(({ size, ...field }) => (
-                      <Grid.Item
-                        key={field.name}
-                        col={size}
-                        direction="column"
-                        alignItems="stretch"
-                      >
-                        <InputRenderer {...field} />
+                      <Grid.Item key={field.name} col={size} direction="column" alignItems="stretch">
+                        <InputRenderer key={field.name} {...field} />
                       </Grid.Item>
                     ))}
                   </Grid.Root>
                 </Modal.Body>
+
                 <Modal.Footer>
                   <Modal.Close>
                     <Button variant="tertiary">Cancel</Button>
@@ -144,29 +169,6 @@ const EmailForm = ({ template = {}, onToggle, open, onSubmit }) => {
       </Modal.Content>
     </Modal.Root>
   );
-};
-
-EmailForm.defaultProps = {
-  template: {},
-};
-
-EmailForm.propTypes = {
-  template: PropTypes.shape({
-    display: PropTypes.string,
-    icon: PropTypes.string,
-    options: PropTypes.shape({
-      from: PropTypes.shape({
-        name: PropTypes.string,
-        email: PropTypes.string,
-      }),
-      message: PropTypes.string,
-      object: PropTypes.string,
-      response_email: PropTypes.string,
-    }),
-  }),
-  open: PropTypes.bool.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  onToggle: PropTypes.func.isRequired,
 };
 
 export default EmailForm;

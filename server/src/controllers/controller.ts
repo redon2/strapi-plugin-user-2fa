@@ -3,6 +3,14 @@ import { PLUGIN_ID } from '../pluginId';
 
 interface MFAUpdateRequest {
   enabled: boolean;
+  documentId?: string; // Optional in some cases
+}
+
+interface MFARegistration {
+  id?: string;
+  user: string; // Assuming this links to the User
+  enabled: boolean;
+  value?: string; // Optional field for other MFA data
 }
 
 const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
@@ -26,24 +34,32 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
   async updateMyMFA(ctx) {
     try {
       const { auth } = ctx.state;
-      const data = ctx.request.body.data as MFAUpdateRequest;
+      const data = ctx.request.body?.data as MFAUpdateRequest;
+
+      // Validate request data
+      if (!data || typeof data.enabled !== 'boolean') {
+        ctx.throw(400, "Invalid request: 'enabled' must be a boolean");
+      }
+
       const registrations = await strapi
         .documents(`plugin::${PLUGIN_ID}.mfa-registration`)
         .findMany({
           filters: { user: auth.credentials.id, documentId: ctx.params.id },
         });
 
-      if (registrations.length > 0) {
-        const response = await strapi.documents(`plugin::${PLUGIN_ID}.mfa-registration`).update({
-          documentId: ctx.params.id,
-          data: { enabled: data.enabled },
-        });
-        return (ctx.body = response);
-      } else {
+      if (registrations.length === 0) {
         ctx.throw(404, 'MFA registration not found');
       }
+
+      const response = await strapi.documents(`plugin::${PLUGIN_ID}.mfa-registration`).update({
+        documentId: ctx.params.id,
+        data: data as Partial<MFARegistration>,
+      });
+
+      ctx.body = response;
     } catch (err) {
       console.error('Error:', err);
+      ctx.throw(500, 'Failed to update MFA');
     }
   },
 

@@ -2280,7 +2280,7 @@
     semver "7.5.4"
     umzug "3.8.1"
 
-"@strapi/design-system@2.0.0-rc.18":
+"@strapi/design-system@2.0.0-rc.18", "@strapi/design-system@^2.0.0-rc.18":
   version "2.0.0-rc.18"
   resolved "https://registry.yarnpkg.com/@strapi/design-system/-/design-system-2.0.0-rc.18.tgz#28d76fc1c0a215cce74f9b1f353ad0d58e157e4c"
   integrity sha512-/19KcoJd36smfVI1uBCFPDfhrDA5Z5kWJpJ5obdtXLwl+T5ktmrhUJ+ReuLztOK/zafxZj8BQmbHJ0CJGBgm4A==
@@ -2309,34 +2309,6 @@
     "@strapi/ui-primitives" "2.0.0-rc.18"
     "@uiw/react-codemirror" "4.22.2"
     lodash "4.17.21"
-    react-remove-scroll "2.5.10"
-
-"@strapi/design-system@^2.0.0-rc.14":
-  version "2.0.0-rc.14"
-  resolved "https://registry.yarnpkg.com/@strapi/design-system/-/design-system-2.0.0-rc.14.tgz#7478f50b3740311a3df3b929f410699b039cf5ef"
-  integrity sha512-zOtArGfAQmKO5qqRE0IlONfjR1JL2VL/KjV3hE++KSybOZgfhbdckN4svpNtJ6i2Pv+glm7nHdu9h6AHRBuujQ==
-  dependencies:
-    "@codemirror/lang-json" "6.0.1"
-    "@floating-ui/react-dom" "2.1.0"
-    "@internationalized/date" "3.5.4"
-    "@internationalized/number" "3.5.3"
-    "@radix-ui/react-accordion" "1.1.2"
-    "@radix-ui/react-alert-dialog" "1.0.5"
-    "@radix-ui/react-avatar" "1.0.4"
-    "@radix-ui/react-checkbox" "1.0.4"
-    "@radix-ui/react-dialog" "1.0.5"
-    "@radix-ui/react-dismissable-layer" "1.0.5"
-    "@radix-ui/react-dropdown-menu" "2.0.6"
-    "@radix-ui/react-focus-scope" "1.0.4"
-    "@radix-ui/react-popover" "1.0.7"
-    "@radix-ui/react-progress" "1.0.3"
-    "@radix-ui/react-radio-group" "1.1.3"
-    "@radix-ui/react-scroll-area" "1.0.5"
-    "@radix-ui/react-switch" "1.0.3"
-    "@radix-ui/react-tabs" "1.0.4"
-    "@radix-ui/react-tooltip" "1.0.7"
-    "@strapi/ui-primitives" "2.0.0-rc.14"
-    "@uiw/react-codemirror" "4.22.2"
     react-remove-scroll "2.5.10"
 
 "@strapi/email@5.11.2":
@@ -2495,7 +2467,7 @@
     typescript "5.4.4"
     yup "0.32.9"
 
-"@strapi/strapi@^5.11.2":
+"@strapi/strapi@^5.5.1":
   version "5.11.2"
   resolved "https://registry.yarnpkg.com/@strapi/strapi/-/strapi-5.11.2.tgz#cce6c610d96a88619b508bc5d1be4da857721d46"
   integrity sha512-g+1DRAB4e2BKno2IkyQCc0iLj6gYI1vu0JLxVA3O7QlaCPiaHExu6l4+AYE6Ma7sCunAjvcQzJ/DTbDtAt80qg==
@@ -2585,7 +2557,7 @@
     typedoc-github-wiki-theme "1.1.0"
     typedoc-plugin-markdown "3.17.1"
 
-"@strapi/typescript-utils@5.11.2", "@strapi/typescript-utils@^5.11.2":
+"@strapi/typescript-utils@5.11.2", "@strapi/typescript-utils@^5.5.1":
   version "5.11.2"
   resolved "https://registry.yarnpkg.com/@strapi/typescript-utils/-/typescript-utils-5.11.2.tgz#6641343a0925fcc0c01ceecbd553c0e7d3e9a18c"
   integrity sha512-dVkQmYOEUql5mg+1ZigGy2xv6Js8RPVP6lea/B8H2+KljXL7qZ4+AILc3SCc9HTc3krZSjDrHA3gBOvEx3kHmw==
@@ -2596,33 +2568,6 @@
     lodash "4.17.21"
     prettier "3.3.3"
     typescript "5.4.4"
-
-"@strapi/ui-primitives@2.0.0-rc.14":
-  version "2.0.0-rc.14"
-  resolved "https://registry.yarnpkg.com/@strapi/ui-primitives/-/ui-primitives-2.0.0-rc.14.tgz#b09a93ef9a69971886f87cbed076d735af6f4909"
-  integrity sha512-lCl370AKFJXjEJmZHW9r8m8gXwgQs+K2WqND2sykL3+1VNjawDhThnRtYqYxheCf10vW8aS0Zd1CduLZ6EoEjg==
-  dependencies:
-    "@radix-ui/number" "1.0.1"
-    "@radix-ui/primitive" "1.0.1"
-    "@radix-ui/react-collection" "1.0.3"
-    "@radix-ui/react-compose-refs" "1.0.1"
-    "@radix-ui/react-context" "1.0.1"
-    "@radix-ui/react-direction" "1.0.1"
-    "@radix-ui/react-dismissable-layer" "1.0.5"
-    "@radix-ui/react-focus-guards" "1.0.1"
-    "@radix-ui/react-focus-scope" "1.0.4"
-    "@radix-ui/react-id" "1.0.1"
-    "@radix-ui/react-popper" "1.1.3"
-    "@radix-ui/react-portal" "1.0.4"
-    "@radix-ui/react-primitive" "1.0.3"
-    "@radix-ui/react-slot" "1.0.2"
-    "@radix-ui/react-use-callback-ref" "1.0.1"
-    "@radix-ui/react-use-controllable-state" "1.0.1"
-    "@radix-ui/react-use-layout-effect" "1.0.1"
-    "@radix-ui/react-use-previous" "1.0.1"
-    "@radix-ui/react-visually-hidden" "1.0.3"
-    aria-hidden "1.2.4"
-    react-remove-scroll "2.5.10"
 
 "@strapi/ui-primitives@2.0.0-rc.18":
   version "2.0.0-rc.18"
@@ -8755,7 +8700,7 @@ react-is@^18.0.0, react-is@^18.2.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.3.1.tgz#e83557dc12eae63a99e003a46388b1dcbb44db7e"
   integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
 
-react-query@3.39.3, react-query@^3.39.3:
+react-query@3.39.3:
   version "3.39.3"
   resolved "https://registry.yarnpkg.com/react-query/-/react-query-3.39.3.tgz#4cea7127c6c26bdea2de5fb63e51044330b03f35"
   integrity sha512-nLfLz7GiohKTJDuT4us4X3h/8unOh+00MLb2yJoGTPjxKs2bc1iDhkNx2bd5MKklXnOD3NrVZ+J2UXujA5In4g==
