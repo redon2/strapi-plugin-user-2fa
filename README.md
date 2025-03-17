@@ -69,7 +69,7 @@ Modify your plugins file `config/plugin.ts` to have the following:
 ```javascript
 
   // ..other plugins
-  "user-2fa": {
+  "strapi-plugin-user-2fa": {
     enabled: true,
     config: {
       mfaTokenExpiresIn: "5m", // length of the mfa token to expire
@@ -78,6 +78,10 @@ Modify your plugins file `config/plugin.ts` to have the following:
     },
   },
 ```
+
+### _NOTE_
+
+Strapi's `NODE_ENV` needs to be different than `development` otherwise the OTPs will be a static value.
 
 ## API Usage:
 
