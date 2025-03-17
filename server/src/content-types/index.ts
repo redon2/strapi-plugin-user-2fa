@@ -38,7 +38,7 @@ const mfaRegistration = {
   },
   pluginOptions: {
     'content-manager': {
-      visible: true,
+      visible: false,
     },
   },
   attributes: {

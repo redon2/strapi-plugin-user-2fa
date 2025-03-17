@@ -52,7 +52,7 @@ const EmailForm = ({ template = {}, onToggle, open, onSubmit }) => {
           {({ isSubmitting }) => {
             console.log(template);
             const htmlMessage = template.options.message_html ?
-              {
+              [{
                 label: formatMessage({
                   id: getTranslation('PopUpForm.Email.options.message.label'),
                   defaultMessage: 'Message HTML',
@@ -61,10 +61,7 @@ const EmailForm = ({ template = {}, onToggle, open, onSubmit }) => {
                 size: 12,
                 type: 'text',
 
-              }
-              : {
-                visibility: 'hidden'
-              };
+              }] : [];
 
             return (
               <>
@@ -118,7 +115,7 @@ const EmailForm = ({ template = {}, onToggle, open, onSubmit }) => {
                         'border-radius': 0,
 
                       },
-                      htmlMessage
+                      ...htmlMessage,
 
                     ].map(({ size, ...field }) => (
                       <Grid.Item

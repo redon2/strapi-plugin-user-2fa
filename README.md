@@ -22,6 +22,17 @@ This token works by creating a temporary MFA token, and blocking login until the
   ![strapi mfa modal](./docs/userModal.png)
   ![strapi mfa disabled](./docs/userDisabled.png)
 
+### Admin Plugin Settings
+
+- This plugin extends user-permissions email store.
+
+  _NOTE:_
+
+  Currently Strapi's plugin has the `Email Template` view hardcoded to their default two templates.
+  Our plugins provides a new view that allows editing to the existing and the newly created templates for this plugin.
+
+  ![strapi mfa disabled](./docs/pluginSettings.png)
+
 ## ⚠️ Compatibility with Strapi versions
 
 - This plugin relies on Strapi5 new `documentId`. It will not work with earlier versions!
@@ -56,12 +67,6 @@ Modify your plugins file `config/plugin.ts` to have the following:
       mfaTokenExpiresIn: "5m", // length of the mfa token to expire
       mfaTokenSecret: env("MFA_JWT_SECRET") || "SomethingSecret",
       forceMFA: true, // this setting enables MFA on user creation
-      email: {
-        fromAddress: 'from@address.com',
-        fromName: 'My From Name',
-        replyTo: 'reply@local.com',
-        subject: 'OTP for your  sign-in', // currently used only for OTP subjects. TODO: migrate to templates
-      },
     },
   },
 ```
@@ -152,7 +157,6 @@ the API will respond with the updated record:
 
 ## TODO:
 
-- Improve Email template
 - Confirm compatibility with refresh token plugin
 
 ## Workflows:

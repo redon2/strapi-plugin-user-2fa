@@ -1,30 +1,14 @@
 import type { Core } from '@strapi/strapi';
-const _ = require('lodash');
-import { PLUGIN_ID } from '../pluginId';
 import { interpolateTemplate } from '../utils';
-
-interface NotifSettings {
-  notifications: {
-    email: {
-      fromAddress: string;
-      fromName: string;
-      replyTo: string;
-      subject: string;
-    };
-  };
-}
 
 const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   getWelcomeMessage() {
     return 'Welcome to Strapi 🚀';
   },
   async notify2fa(user, payload, mfaRegistrations) {
-    const config = strapi.config.get(`plugin::${PLUGIN_ID}`) as NotifSettings;
     mfaRegistrations.forEach(async (registration) => {
       switch (registration.type) {
         case 'email':
-          // console.log('sending email', registration);
-          // email 2fa
           const emailTemplates = await strapi
             .store({ type: 'plugin', name: 'users-permissions', key: 'email' })
             .get();
@@ -47,7 +31,6 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
             text: interpolateTemplate(templateOptions.message, values),
             html: interpolateTemplate(templateOptions.message_html, values),
           };
-          // console.log(emailToSend);
           await strapi.plugin('email').service('email').send(emailToSend);
           break;
         default:
@@ -56,7 +39,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     });
   },
   async notifyEmailMFAChange(registration) {
-    const config = strapi.config.get(`plugin::${PLUGIN_ID}`) as NotifSettings;
+    // Currently triggered on Create only.
     const emailTemplates = await strapi
       .store({ type: 'plugin', name: 'users-permissions', key: 'email' })
       .get();

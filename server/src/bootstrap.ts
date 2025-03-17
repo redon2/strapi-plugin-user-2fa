@@ -58,7 +58,6 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
   const existingTemplates = await strapi
     .store({ type: 'plugin', name: 'users-permissions', key: 'email' })
     .get({});
-  // console.log(existingTemplates['reset_password']);
   const customTemplates = [
     {
       name: 'mfa_otp_notification',
