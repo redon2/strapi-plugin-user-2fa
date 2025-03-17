@@ -96,7 +96,7 @@ const EmailTable: React.FC<EmailTableProps> = ({ canUpdate, onEditClick, emailTe
       </Thead>
       <Tbody>
         {templateArray.map((template, index) => (
-          <Tr key={template.id} cursor="pointer" onClick={() => onEditClick(templateKeys[index])} index={index}>
+          <Tr key={templateKeys[index] || `template-${index}`} cursor="pointer" onClick={() => onEditClick(templateKeys[index])} index={index}>
             <Td>
               <Box width="3.2rem" height="3.2rem" padding="0.8rem">
                 <IconRenderer name={template.icon} />

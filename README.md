@@ -4,9 +4,10 @@
   Strapi5 Users 2FA plugin
 </h1>
 
-Strapi Plugin that extends the local authorization functionality to provide multi-factor authentication (MFA/2FA).
+This Strapi plugin enhances the local authentication system by adding multi-factor authentication (MFA/2FA) support.
 
-Currently in BETA. For this initial release the MFA relies on email only.
+⚠️ BETA Release Notice
+This plugin is currently in BETA. In this initial release, MFA authentication is available via email only.
 
 This token works by creating a temporary MFA token, and blocking login until the MFA + the OTP are provided.
 
@@ -28,14 +29,15 @@ This token works by creating a temporary MFA token, and blocking login until the
 
   _NOTE:_
 
-  Currently Strapi's plugin has the `Email Template` view hardcoded to their default two templates.
-  Our plugins provides a new view that allows editing to the existing and the newly created templates for this plugin.
+  Strapi's default `Email Template` view is hardcoded to only show two default templates.
+  This plugin introduces a new view that allows you to edit both existing templates and newly created ones.
 
   ![strapi mfa disabled](./docs/pluginSettings.png)
 
 - As the plugin provides some User APIs, the admin can modify the permissions:
 
-  By default the `Authenticated` role has access to view their won MFA registrations. If Admin wants to allow this role to modify their own registrations the `updateMyMFA` action needs to be enabled.
+  During plugin initialization the `Authenticated` role will get access to read their own MFA registrations.
+  Admin is able to allow roles to modify their own registrations the `updateMyMFA` action needs to be enabled.
 
   ![strapi mfa disabled](./docs/pluginRoleSettings.png)
 
@@ -46,7 +48,7 @@ This token works by creating a temporary MFA token, and blocking login until the
 
 ## ⚙️ Installation
 
-To install the Strapi MFA Plugin, simply run one of the following command:
+Install the Strapi MFA Plugin using one of the following commands:
 
 ```
 npm install strapi-plugin-user-2fa
@@ -81,7 +83,7 @@ Modify your plugins file `config/plugin.ts` to have the following:
 
 ### User Authentication
 
-if user has MFA configured and enabled the `POST`:`/api/auth/local` will respond with the following:
+If user has MFA configured and enabled the `POST`:`/api/auth/local` will return the following response:
 
 ```json
 {
@@ -99,7 +101,7 @@ once the user retrieves the OTP the following API should be called:
 }
 ```
 
-if the MFA token and the OTP are valid, the API will return
+If the MFA token and the OTP are valid, the API will return
 
 ```json
 {
@@ -142,7 +144,7 @@ User will be able to enable and or disable their own registrations using `PATCH`
 }
 ```
 
-the API will respond with the updated record:
+the API will return the following response:
 
 ```javascript
 [
@@ -161,9 +163,10 @@ the API will respond with the updated record:
 ];
 ```
 
-## TODO:
+## 🚀 TODO:
 
-- Confirm compatibility with refresh token plugin
+- ✅ Verify compatibility with the refresh token plugin
+- 🔄 Future enhancements to support additional MFA methods (e.g., TOTP, SMS, authenticator apps)
 
 ## Workflows:
 
